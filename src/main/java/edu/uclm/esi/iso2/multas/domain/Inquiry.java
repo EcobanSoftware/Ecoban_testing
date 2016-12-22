@@ -35,6 +35,18 @@ public class Inquiry {
 	private double maxSpeed;
 	@OneToOne(fetch = FetchType.LAZY, targetEntity=Sanction.class, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	private Sanction sanction;
+	static int [][][] points_speeds_matrix = {
+			{{0,30,0,0},{31,50,0,100},{51,60,2,300},{61,70,4,400},{71,80,6,500},{81,1000,6,600}},
+			{{0,40,0,0},{41,60,0,100},{61,70,2,300},{71,80,4,400},{81,90,6,500},{91,1000,6,600}},
+			{{0,50,0,0},{51,70,0,100},{71,80,2,300},{81,90,4,400},{91,100,6,500},{101,1000,6,600}},
+			{{0,60,0,0},{61,90,0,100},{91,110,2,300},{111,120,4,400},{121,130,6,500},{131,1000,6,600}},
+			{{0,70,0,0},{71,100,0,100},{101,120,2,300},{121,130,4,400},{131,140,6,500},{141,1000,6,600}},
+			{{0,80,0,0},{81,110,0,100},{111,130,2,300},{131,140,4,400},{141,150,6,500},{151,1000,6,600}},
+			{{0,90,0,0},{91,120,0,100},{121,140,2,300},{141,150,4,400},{151,160,6,500},{161,1000,6,600}},
+			{{0,100,0,0},{101,130,0,100},{131,150,2,300},{151,160,4,400},{161,170,6,500},{171,1000,6,600}},
+			{{0,110,0,0},{111,140,0,100},{141,160,2,300},{161,170,4,400},{171,180,6,500},{181,1000,6,600}},
+			{{0,120,0,0},{121,150,0,100},{151,170,2,300},{171,180,4,400},{181,190,6,500},{191,1000,6,600}},
+	};
 	
 	public Inquiry() {
 		
@@ -55,8 +67,8 @@ public class Inquiry {
 	}
 
 	public Sanction createSanctionFor(String dni) {
-		int points=calculatePoints();
-		int amount=calculateAmount();
+		int points=getAmountAndPoints(maxSpeed,speed)[0];
+		int amount=getAmountAndPoints(maxSpeed,speed)[1];
 		Sanction sanction=new Sanction();
 		DriverDao dao=new DriverDao();
 		Driver driver=dao.findByDni(dni);
@@ -72,236 +84,22 @@ public class Inquiry {
 		return id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public Date getDateOfIssue() {
-		return dateOfIssue;
-	}
-
-	public void setDateOfIssue(Date dateOfIssue) {
-		this.dateOfIssue = dateOfIssue;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public Owner getOwner() {
-		return owner;
-	}
-
-	public void setOwner(Owner owner) {
-		this.owner = owner;
-	}
-
-	public double getSpeed() {
-		return speed;
-	}
-
-	public void setSpeed(double speed) {
-		this.speed = speed;
-	}
-
-	public double getMaxSpeed() {
-		return maxSpeed;
-	}
-
-	public void setMaxSpeed(double maxSpeed) {
-		this.maxSpeed = maxSpeed;
-	}
-
-	private int calculatePoints() {
-		if (maxSpeed==30) {
-			if (speed>=31 && speed<=50) 
-				return 0;
-			else if (speed>=51 && speed<=60)
-				return 2;
-			else if (speed>=61 && speed<=70)
-				return 4;
-			else if (speed>=71)
-				return 6;
-		} else if (maxSpeed==40) {
-			if (speed>=41 && speed<=60) 
-				return 0;
-			else if (speed>=61 && speed<=70)
-				return 2;
-			else if (speed>=71 && speed<=80)
-				return 4;
-			else if (speed>=81)
-				return 6;
-		} else if (maxSpeed==60) {
-			if (speed>=61 && speed<=90) 
-				return 0;
-			else if (speed>=91 && speed<=110)
-				return 2;
-			else if (speed>=111 && speed<=120)
-				return 4;
-			else if (speed>=121)
-				return 6;
-		} else if (maxSpeed==70) {
-			if (speed>=71 && speed<=100) 
-				return 0;
-			else if (speed>=101 && speed<=120)
-				return 2;
-			else if (speed>=121 && speed<=130)
-				return 4;
-			else if (speed>=131)
-				return 6;
-		} else if (maxSpeed==80) {
-			if (speed>=81 && speed<=110) 
-				return 0;
-			else if (speed>=111 && speed<=130)
-				return 2;
-			else if (speed>=131 && speed<=140)
-				return 4;
-			else if (speed>=141)
-				return 6;
-		} else if (maxSpeed==90) {
-			if (speed>=91 && speed<=120) 
-				return 0;
-			else if (speed>=121 && speed<=140)
-				return 2;
-			else if (speed>=141 && speed<=150)
-				return 4;
-			else if (speed>=151)
-				return 6;
-		} else if (maxSpeed==100) {
-			if (speed>=101 && speed<=130) 
-				return 0;
-			else if (speed>=131 && speed<=150)
-				return 2;
-			else if (speed>=151 && speed<=160)
-				return 4;
-			else if (speed>=161)
-				return 6;
-		} else if (maxSpeed==110) {
-			if (speed>=111 && speed<=140) 
-				return 0;
-			else if (speed>=141 && speed<=160)
-				return 2;
-			else if (speed>=161 && speed<=170)
-				return 4;
-			else if (speed>=171)
-				return 6;
-		} else if (maxSpeed==120) {
-			if (speed>=121 && speed<=150) 
-				return 0;
-			else if (speed>=151 && speed<=170)
-				return 2;
-			else if (speed>=171 && speed<=180)
-				return 4;
-			else if (speed>=181)
-				return 6;
+	private int [] getAmountAndPoints(double maxSpeed, double speed){
+		int [] result = new int [2];
+		int [][] matrix = getMatrix(maxSpeed);
+		for(int i=0;i<matrix.length; i++){
+			int [] row = matrix[i];
+			if(row[0]<=speed && row[1]>=speed){
+				result[0]=row[2];
+				result[1]=row[3];
+				break;
+			}
 		}
-		return 0;
+		return result;
 	}
-
-	private int calculateAmount() {
-		if (maxSpeed==30) {
-			if (speed>=31 && speed<=50) 
-				return 100;
-			else if (speed>=51 && speed<=60)
-				return 300;
-			else if (speed>=61 && speed<=70)
-				return 400;
-			else if (speed>=71 && speed<=80)
-				return 500;
-			else
-				return 6;
-		} else if (maxSpeed==40) {
-			if (speed>=41 && speed<=60) 
-				return 100;
-			else if (speed>=61 && speed<=70)
-				return 300;
-			else if (speed>=71 && speed<=80)
-				return 400;
-			else if (speed>=81 && speed<=90)
-				return 500;
-			else
-				return 600;
-		} else if (maxSpeed==60) {
-			if (speed>=61 && speed<=90) 
-				return 100;
-			else if (speed>=91 && speed<=110)
-				return 300;
-			else if (speed>=111 && speed<=120)
-				return 400;
-			else if (speed>=121 && speed<=130)
-				return 500;
-			else 
-				return 600;
-		} else if (maxSpeed==70) {
-			if (speed>=71 && speed<=100) 
-				return 100;
-			else if (speed>=101 && speed<=120)
-				return 300;
-			else if (speed>=121 && speed<=130)
-				return 400;
-			else if (speed>=131 && speed<=140)
-				return 500;
-			else
-				return 600;
-		} else if (maxSpeed==80) {
-			if (speed>=81 && speed<=110) 
-				return 100;
-			else if (speed>=111 && speed<=130)
-				return 300;
-			else if (speed>=131 && speed<=140)
-				return 400;
-			else if (speed>=141 && speed<=150)
-				return 500;
-			else
-				return 600;
-		} else if (maxSpeed==90) {
-			if (speed>=91 && speed<=120) 
-				return 100;
-			else if (speed>=121 && speed<=140)
-				return 300;
-			else if (speed>=141 && speed<=150)
-				return 400;
-			else if (speed>=151 && speed<=160)
-				return 500;
-			else
-				return 600;
-		} else if (maxSpeed==100) {
-			if (speed>=101 && speed<=130) 
-				return 100;
-			else if (speed>=131 && speed<=150)
-				return 300;
-			else if (speed>=151 && speed<=160)
-				return 400;
-			else if (speed>=161 && speed<=170)
-				return 500;
-			else
-				return 600;
-		} else if (maxSpeed==110) {
-			if (speed>=111 && speed<=140) 
-				return 100;
-			else if (speed>=141 && speed<=160)
-				return 300;
-			else if (speed>=161 && speed<=170)
-				return 400;
-			else if (speed>=171 && speed<=180)
-				return 500;
-			else
-				return 600;
-		} else if (maxSpeed==120) {
-			if (speed>=121 && speed<=150) 
-				return 100;
-			else if (speed>=151 && speed<=170)
-				return 300;
-			else if (speed>=171 && speed<=180)
-				return 400;
-			else if (speed>=181 && speed<=190)
-				return 500;
-			else return 600;
-		}
-		return 0;
+	
+	public int [][] getMatrix(double maxSpeed){
+		return points_speeds_matrix[(int) ((maxSpeed/10)-3)];
+		
 	}
 }

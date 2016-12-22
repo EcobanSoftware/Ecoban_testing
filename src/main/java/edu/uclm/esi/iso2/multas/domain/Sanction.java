@@ -47,62 +47,20 @@ public class Sanction {
 		this.points = points;
 	}
 
-	public Date getDateOfReception() {
-		return dateOfReception;
-	}
-
-	public void setDateOfReception(Date dateOfReception) {
-		this.dateOfReception = dateOfReception;
-	}
-
 	public Date getDateOfPayment() {
 		return dateOfPayment;
-	}
-
-	public void setDateOfPayment(Date dateOfPayment) {
-		this.dateOfPayment = dateOfPayment;
 	}
 
 	public int getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
-		this.id = id;
-	}
-	
 	public void setSanctionHolder(SanctionHolder sanctionHolder) {
 		this.sanctionHolder = sanctionHolder;
-	}
-	
-	public SanctionHolder getSanctionHolder() {
-		return sanctionHolder;
 	}
 
 	public void pay() {
 		this.dateOfPayment=new Date(System.currentTimeMillis());
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (id ^ (id >>> 32));
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Sanction other = (Sanction) obj;
-		if (id != other.id)
-			return false;
-		return true;
 	}
 
 	

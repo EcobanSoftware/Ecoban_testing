@@ -44,18 +44,6 @@ public class GeneralDao<T> {
             HibernateFactory.close(session);
         }
     }
-
-    public void delete(T obj) throws HibernateException {
-        try {
-            startOperation();
-            session.delete(obj);
-            transaction.commit();
-        } catch(HibernateException e) {
-        	throw e;
-        } finally {
-            HibernateFactory.close(session);
-        }
-    }
     
 	public T findById(Class clazz, Integer id) throws HibernateException {
         T obj = null;
@@ -70,20 +58,5 @@ public class GeneralDao<T> {
             HibernateFactory.close(session);
         }
         return obj;
-    }
-
-    public List<T> findAll(Class clazz) throws HibernateException {
-        List<T> objects = null;
-        try {
-            startOperation();
-            Query query = session.createQuery("from " + clazz.getName());
-            objects = query.list();
-            transaction.commit();
-        } catch(HibernateException e) {
-        	throw e;
-        } finally {
-            HibernateFactory.close(session);
-        }
-        return objects;
     }
 }

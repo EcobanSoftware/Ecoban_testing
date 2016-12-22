@@ -14,9 +14,6 @@ public class Driver extends SanctionHolder {
 		this.points=12;
 	}
 
-	public Driver(String dni, String name, String lastName, String fullAddress) {
-		super(dni, name, lastName, fullAddress);
-	}
 
 	public int getPoints() {
 		return points;

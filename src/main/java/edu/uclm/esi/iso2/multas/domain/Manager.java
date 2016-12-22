@@ -3,7 +3,6 @@ package edu.uclm.esi.iso2.multas.domain;
 import edu.uclm.esi.iso2.multas.dao.DriverDao;
 import edu.uclm.esi.iso2.multas.dao.GeneralDao;
 import edu.uclm.esi.iso2.multas.dao.OwnerDao;
-import edu.uclm.esi.iso2.multas.dao.VehicleDao;
 
 /**
  * This class is the access point to the business logic.
@@ -52,7 +51,21 @@ public class Manager {
 		GeneralDao<Inquiry> dao=new GeneralDao<>();
 		Inquiry inquiry=dao.findById(Inquiry.class, idInquiry);
 		Sanction sanction=inquiry.createSanctionFor(dni);
+		subtractPoints(dni, sanction.getPoints());
 		return sanction;
+	}
+	
+	/**
+	 * Subtract the points to the driver
+	 * @param dni
+	 * @param points
+	 * @return 
+	 */
+	public void subtractPoints(String dni, int points){
+		DriverDao Ddao = new DriverDao();
+		Driver driver = Ddao.findByDni(dni);
+		driver.setPoints(driver.getPoints() - points);
+		Ddao.update(driver);
 	}
 	
 	/***
@@ -66,17 +79,4 @@ public class Manager {
 		dao.update(sanction);
 	}
 	
-	/**
-	 * Executed from the user interface when a vehicle changes its owner
-	 * @param license The license number of the vehicle
-	 * @param newDni The dni of the new owner
-	 */
-	public void changeOwner(String license, String newDni) {
-		VehicleDao daoVehicle=new VehicleDao();
-		Vehicle vehicle=daoVehicle.findByLicense(license);
-		OwnerDao daoOwner=new OwnerDao();
-		Owner owner=daoOwner.findByDni(newDni);
-		vehicle.setOwner(owner);
-		daoVehicle.update(vehicle);
-	}
 }

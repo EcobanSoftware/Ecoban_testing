@@ -11,22 +11,6 @@ public class OwnerDao extends GeneralDao<Owner> {
 		super();
 	}
 	
-	public Owner findByDni(String dni) throws HibernateException {
-		Owner owner = null;
-        try {
-            startOperation();
-            Query query=session.createQuery("idOwner from OwnerVehicle where license=? and ");
-            query.setParameter(1, dni);
-            owner = (Owner) query.getSingleResult();
-            transaction.commit();
-        } catch (HibernateException e) {
-            throw e;
-        } finally {
-            HibernateFactory.close(session);
-        }
-        return owner;
-	}
-	
 	public Owner findByLicense(String license) throws HibernateException {
 		Owner owner = null;
         try {
